@@ -1,8 +1,7 @@
 name: "CI"
 
 on:
-  [push, pull_request]
-
+  workflow_dispatch:
 permissions:
   contents: read
 
@@ -13,7 +12,7 @@ jobs:
       matrix:
         node-version: ['22']
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v7
@@ -39,7 +38,7 @@ jobs:
         TZ: "Europe/Prague"
 
   prepare-e2e-server:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v6
 
@@ -60,7 +59,7 @@ jobs:
         retention-days: 1
 
   prepare-e2e-client:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       # CI runs the e2e server on :5000 (docker-compose PORT default; no AirPlay
       # conflict on Linux). The test helpers and client build read SUPERDESK_URL,
@@ -110,7 +109,7 @@ jobs:
         retention-days: 1
 
   playwright-e2e:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs:
     - prepare-e2e-server
     - prepare-e2e-client
@@ -204,7 +203,7 @@ jobs:
   merge-playwright-reports:
     if: ${{ !cancelled() }}
     needs: [playwright-e2e]
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     defaults:
       run:
         working-directory: e2e/client
